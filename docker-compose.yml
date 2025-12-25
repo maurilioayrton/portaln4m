@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Banco de dados MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: n4m_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: u432003722_portaln4m
+      MYSQL_USER: u432003722_maurilioayrton
+      MYSQL_PASSWORD: 23311913mmmN.
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - n4m_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Aplicação React
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: n4m_app
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - n4m_network
+    command: npm run dev -- --host
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  n4m_network:
+    driver: bridge
