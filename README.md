@@ -1,269 +1,238 @@
-# N4M - Portal Tecnológico
+# 🚀 N4M Portal - Landing Page
 
 Landing page moderna e tecnológica para startup de tecnologia com painel administrativo.
 
-## 🚀 Tecnologias
-
-- **Frontend**: React 19 + TypeScript + Vite
-- **Estilização**: TailwindCSS
-- **Banco de Dados**: MySQL 8.0
-- **Containerização**: Docker + Docker Compose
-
 ## 📋 Pré-requisitos
 
-Antes de começar, certifique-se de ter instalado em sua máquina:
+- [Docker Desktop](https://docs.docker.com/get-docker/) instalado
+- Portas 3306 (MySQL) e 5173 (App) disponíveis
 
-- [Docker](https://docs.docker.com/get-docker/) (versão 20.10 ou superior)
-- [Docker Compose](https://docs.docker.com/compose/install/) (versão 2.0 ou superior)
-- [Git](https://git-scm.com/downloads)
+## 🐳 Como rodar o projeto
 
-## 🔧 Instalação e Configuração
-
-### 1. Clone o repositório (se aplicável)
-
-\`\`\`bash
+### 1️⃣ Clone o repositório (se ainda não tiver)
+```bash
 git clone <seu-repositorio>
-cd <nome-do-projeto>
-\`\`\`
+cd <pasta-do-projeto>
+```
 
-### 2. Configure as variáveis de ambiente
-
-Copie o arquivo de exemplo e ajuste se necessário:
-
-\`\`\`bash
-cp .env.example .env
-\`\`\`
-
-### 3. Suba os containers com Docker Compose
-
-\`\`\`bash
+### 2️⃣ Suba os containers
+```bash
 docker-compose up -d
-\`\`\`
+```
 
-Este comando irá:
-- Baixar as imagens necessárias (MySQL e Node.js)
-- Criar o banco de dados MySQL
-- Executar o script de inicialização (criar tabelas e inserir dados)
-- Instalar as dependências do Node.js
-- Iniciar a aplicação React
+**Aguarde 2-3 minutos** na primeira execução (download de imagens e instalação de dependências).
 
-### 4. Aguarde a inicialização
+### 3️⃣ Verifique se os containers estão rodando
+```bash
+docker-compose ps
+```
 
-A primeira execução pode levar alguns minutos para:
-- Baixar as imagens Docker
-- Instalar todas as dependências npm
-- Inicializar o banco de dados
+Você deve ver algo assim:
+```
+NAME        IMAGE          STATUS         PORTS
+n4m_mysql   mysql:8.0      Up (healthy)   0.0.0.0:3306->3306/tcp
+n4m_app     n4m_app        Up             0.0.0.0:5173->5173/tcp
+```
 
-Você pode acompanhar os logs com:
+### 4️⃣ Acesse a aplicação
 
-\`\`\`bash
-docker-compose logs -f
-\`\`\`
-
-### 5. Acesse a aplicação
-
-Após a inicialização completa:
-
-- **Frontend**: http://localhost:5173
+- **Site**: http://localhost:5173
 - **Painel Admin**: http://localhost:5173/admin/login
-- **MySQL**: localhost:3306
+  - Usuário: `maurilio.alves`
+  - Senha: `2331`
 
-## 🔐 Credenciais de Acesso
-
-### Painel Administrativo
-- **Usuário**: maurilio.alves
-- **Senha**: 2331
-
-### Banco de Dados MySQL
-- **Host**: localhost (ou mysql dentro do container)
-- **Porta**: 3306
-- **Database**: u432003722_portaln4m
-- **Usuário**: u432003722_maurilioayrton
-- **Senha**: 23311913mmmN.
-- **Root Password**: rootpassword
-
-## 📦 Comandos Úteis
-
-### Parar os containers
-
-\`\`\`bash
-docker-compose down
-\`\`\`
-
-### Parar e remover volumes (apaga dados do banco)
-
-\`\`\`bash
-docker-compose down -v
-\`\`\`
-
-### Reiniciar os containers
-
-\`\`\`bash
-docker-compose restart
-\`\`\`
+## 🔧 Comandos úteis
 
 ### Ver logs em tempo real
-
-\`\`\`bash
+```bash
+# Todos os serviços
 docker-compose logs -f
-\`\`\`
 
-### Ver logs apenas da aplicação
-
-\`\`\`bash
-docker-compose logs -f app
-\`\`\`
-
-### Ver logs apenas do MySQL
-
-\`\`\`bash
+# Apenas MySQL
 docker-compose logs -f mysql
-\`\`\`
 
-### Acessar o terminal do container da aplicação
+# Apenas aplicação
+docker-compose logs -f app
+```
 
-\`\`\`bash
-docker-compose exec app sh
-\`\`\`
+### Parar os containers
+```bash
+docker-compose down
+```
 
-### Acessar o MySQL via linha de comando
+### Reiniciar os containers
+```bash
+docker-compose restart
+```
 
-\`\`\`bash
-docker-compose exec mysql mysql -u u432003722_maurilioayrton -p u432003722_portaln4m
-# Senha: 23311913mmmN.
-\`\`\`
-
-### Reconstruir os containers (após mudanças no Dockerfile)
-
-\`\`\`bash
+### Reconstruir a aplicação (após mudanças no código)
+```bash
+docker-compose down
 docker-compose up -d --build
-\`\`\`
+```
 
-### Instalar novas dependências npm
+### Limpar tudo e começar do zero
+```bash
+docker-compose down -v
+docker-compose up -d --build
+```
 
-\`\`\`bash
-docker-compose exec app npm install <nome-do-pacote>
-\`\`\`
+## 🗄️ Acessar o MySQL
 
-## 🗄️ Estrutura do Banco de Dados
+### Via linha de comando
+```bash
+docker-compose exec mysql mysql -u u432003722_maurilioayrton -p
+```
+Senha: `23311913mmmN.`
 
-### Tabela: partners
-- id (INT, AUTO_INCREMENT, PRIMARY KEY)
-- name (VARCHAR 255)
+### Via cliente MySQL (DBeaver, MySQL Workbench, etc.)
+- Host: `localhost`
+- Porta: `3306`
+- Banco: `u432003722_portaln4m`
+- Usuário: `u432003722_maurilioayrton`
+- Senha: `23311913mmmN.`
+
+## 📊 Estrutura do Banco de Dados
+
+O script `init.sql` cria automaticamente:
+
+### Tabela `partners`
+- id (INT, AUTO_INCREMENT)
+- name (VARCHAR)
 - logo_url (TEXT)
 - created_at (TIMESTAMP)
 - updated_at (TIMESTAMP)
 
-### Tabela: testimonials
-- id (INT, AUTO_INCREMENT, PRIMARY KEY)
-- name (VARCHAR 255)
-- position (VARCHAR 255)
-- company (VARCHAR 255)
+### Tabela `testimonials`
+- id (INT, AUTO_INCREMENT)
+- name (VARCHAR)
+- position (VARCHAR)
+- company (VARCHAR)
 - content (TEXT)
 - rating (INT, 1-5)
 - avatar_url (TEXT)
 - created_at (TIMESTAMP)
 - updated_at (TIMESTAMP)
 
-## 🎯 Funcionalidades
+## 🐛 Solução de Problemas
 
-### Frontend
-- Landing page moderna e responsiva
-- Seção Hero com animações
-- Apresentação de serviços
-- Galeria de parceiros
-- Depoimentos de clientes
-- Formulário de contato via WhatsApp
-- Design futurista com tema escuro
+### ❌ Erro: "port is already allocated"
+**Problema**: Porta 3306 ou 5173 já está em uso.
 
-### Painel Administrativo
-- Login seguro
-- Gerenciamento de parceiros (CRUD)
-- Gerenciamento de depoimentos (CRUD)
-- Interface intuitiva com abas
-- Preview de imagens em tempo real
+**Solução**:
+```bash
+# Verificar o que está usando a porta
+# Windows
+netstat -ano | findstr :3306
+netstat -ano | findstr :5173
 
-## 🔧 Desenvolvimento
+# Linux/Mac
+lsof -i :3306
+lsof -i :5173
 
-### Estrutura de Pastas
+# Parar o processo ou mudar a porta no docker-compose.yml
+```
 
-\`\`\`
-src/
-├── components/          # Componentes reutilizáveis
-├── pages/              # Páginas da aplicação
-│   ├── home/          # Landing page
-│   └── admin/         # Painel administrativo
-├── router/            # Configuração de rotas
-├── i18n/              # Internacionalização
-└── main.tsx           # Entry point
-\`\`\`
+### ❌ Erro: "Cannot connect to MySQL"
+**Problema**: MySQL ainda não está pronto.
 
-### Hot Reload
+**Solução**:
+```bash
+# Aguarde o MySQL ficar saudável
+docker-compose logs -f mysql
 
-O projeto está configurado com hot reload. Qualquer alteração nos arquivos será refletida automaticamente no navegador.
+# Quando ver "ready for connections", o MySQL está pronto
+```
 
-## 🐛 Troubleshooting
+### ❌ Aplicação não carrega no navegador
+**Problema**: Container da aplicação não iniciou corretamente.
 
-### Porta 5173 já está em uso
+**Solução**:
+```bash
+# Ver logs da aplicação
+docker-compose logs -f app
 
-\`\`\`bash
-# Pare o processo que está usando a porta ou altere a porta no docker-compose.yml
-docker-compose down
-# Edite docker-compose.yml e mude "5173:5173" para "3000:5173"
-docker-compose up -d
-\`\`\`
-
-### Porta 3306 já está em uso (MySQL local)
-
-\`\`\`bash
-# Pare o MySQL local ou altere a porta no docker-compose.yml
-docker-compose down
-# Edite docker-compose.yml e mude "3306:3306" para "3307:3306"
-docker-compose up -d
-\`\`\`
-
-### Erro ao conectar no banco de dados
-
-\`\`\`bash
-# Verifique se o container do MySQL está rodando
-docker-compose ps
-
-# Verifique os logs do MySQL
-docker-compose logs mysql
-
-# Reinicie os containers
-docker-compose restart
-\`\`\`
-
-### Dependências não instaladas
-
-\`\`\`bash
-# Reconstrua os containers
+# Se necessário, reconstruir
 docker-compose down
 docker-compose up -d --build
-\`\`\`
+```
 
-## 📝 Notas Importantes
+### ❌ Erro: "npm install failed"
+**Problema**: Falha ao instalar dependências.
 
-1. **Dados Persistentes**: Os dados do MySQL são armazenados em um volume Docker. Eles persistem mesmo após parar os containers.
+**Solução**:
+```bash
+# Limpar cache e reconstruir
+docker-compose down -v
+docker system prune -a
+docker-compose up -d --build
+```
 
-2. **Desenvolvimento**: O código fonte é montado como volume, então alterações são refletidas imediatamente.
+### ❌ Mudanças no código não aparecem
+**Problema**: Volume não está sincronizando.
 
-3. **Produção**: Para produção, você precisará:
-   - Configurar variáveis de ambiente adequadas
-   - Usar build de produção do React
-   - Configurar HTTPS
-   - Usar senhas mais seguras
-   - Configurar backup do banco de dados
+**Solução**:
+```bash
+# Reiniciar o container da aplicação
+docker-compose restart app
 
-4. **Segurança**: As credenciais neste README são apenas para desenvolvimento local. Nunca use essas credenciais em produção.
+# Ou reconstruir
+docker-compose up -d --build app
+```
+
+## 📁 Estrutura do Projeto
+
+```
+.
+├── docker-compose.yml      # Orquestração dos containers
+├── Dockerfile             # Configuração do container da aplicação
+├── init.sql              # Script de inicialização do banco
+├── package.json          # Dependências do projeto
+├── src/                  # Código fonte
+│   ├── pages/           # Páginas da aplicação
+│   │   ├── home/       # Landing page
+│   │   └── admin/      # Painel administrativo
+│   ├── components/     # Componentes reutilizáveis
+│   └── router/         # Configuração de rotas
+└── README.md           # Este arquivo
+```
+
+## 🎯 Funcionalidades
+
+### Landing Page
+- ✅ Hero Section com animações
+- ✅ Sobre a empresa
+- ✅ Serviços (Desenvolvimento, DevOps, BI, Observabilidade, Sustentação)
+- ✅ Seção de Parceiros
+- ✅ Depoimentos de clientes
+- ✅ Contato via WhatsApp
+- ✅ Rodapé completo
+
+### Painel Administrativo
+- ✅ Login seguro
+- ✅ Gerenciamento de Parceiros (CRUD)
+- ✅ Gerenciamento de Depoimentos (CRUD)
+- ✅ Interface moderna e intuitiva
+
+## 🔐 Credenciais
+
+### Painel Admin
+- Usuário: `maurilio.alves`
+- Senha: `2331`
+
+### MySQL
+- Host: `localhost:3306`
+- Banco: `u432003722_portaln4m`
+- Usuário: `u432003722_maurilioayrton`
+- Senha: `23311913mmmN.`
 
 ## 📞 Suporte
 
-Para dúvidas ou problemas:
-- WhatsApp: +55 61 99214-9630
-- Email: contato@n4m.com.br
+Se encontrar algum problema, verifique:
+1. Docker Desktop está rodando
+2. Portas 3306 e 5173 estão livres
+3. Logs dos containers (`docker-compose logs -f`)
 
-## 📄 Licença
+---
 
-Este projeto é proprietário e confidencial.
+Desenvolvido com ❤️ por N4M
