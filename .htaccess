@@ -6,12 +6,12 @@
   RewriteCond %{HTTPS} off
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   
-  # Handle React Router
-  RewriteRule ^index\.html$ - [L]
+  # Handle React Router - SPA Fallback
+  # Se o arquivo não existir, redireciona para index.html
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteRule . /index.html [L]
+  RewriteCond %{REQUEST_URI} !^/api/
+  RewriteRule ^ index.html [QSA,L]
 </IfModule>
 
 # Cache Control
@@ -58,3 +58,12 @@
   Header set X-XSS-Protection "1; mode=block"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

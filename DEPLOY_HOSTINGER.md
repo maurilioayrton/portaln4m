@@ -1,280 +1,297 @@
 # 🚀 Guia de Deploy na Hostinger
 
-## ✅ Estrutura do Projeto (Pronta para Hostinger)
+## 📋 Pré-requisitos
 
-Seu projeto já está organizado corretamente:
+- Conta na Hostinger com plano que suporte Node.js
+- Repositório Git (GitHub, GitLab ou Bitbucket) ou arquivo ZIP do projeto
+- Node.js 18.x ou superior
+
+---
+
+## 🎯 Estrutura do Projeto (Validada ✅)
 
 ```
 portaln4m/
 ├── package.json          ✅ Scripts configurados
-├── vite.config.ts        ✅ Configuração Vite
-├── index.html            ✅ Entry point
-├── tsconfig.json         ✅ TypeScript config
-├── tailwind.config.ts    ✅ Tailwind config
-├── postcss.config.ts     ✅ PostCSS config
-├── src/                  ✅ Código fonte
+├── vite.config.ts        ✅ Configuração Vite + Preview
+├── index.html            ✅ Entry point na raiz
+├── .htaccess             ✅ SPA Fallback + Cache + HTTPS
+├── public/
+│   └── _redirects        ✅ Fallback alternativo
+├── src/
 │   ├── main.tsx          ✅ Entry point React
 │   ├── App.tsx           ✅ Componente principal
-│   ├── pages/            ✅ Páginas
-│   ├── components/       ✅ Componentes
-│   └── router/           ✅ Rotas
-└── .gitignore            ✅ Arquivos ignorados
+│   ├── router/
+│   │   ├── config.tsx    ✅ Rotas configuradas
+│   │   └── index.ts      ✅ Router setup
+│   └── pages/
+│       ├── home/         ✅ Página inicial
+│       └── admin/        ✅ Área administrativa
+│           ├── login/
+│           └── dashboard/
+└── dist/                 (gerado no build)
 ```
 
 ---
 
-## 📋 Pré-requisitos
+## 🔧 Configuração no hPanel da Hostinger
 
-1. **Conta Hostinger** com plano que suporte Node.js
-2. **Repositório Git** (GitHub, GitLab ou Bitbucket) OU arquivo ZIP do projeto
-3. **Node.js 18+** configurado no painel Hostinger
+### **1. Criar Aplicação Node.js**
 
----
+Acesse: **hPanel → Website → Node.js App → Create Application**
 
-## 🔧 Método 1: Deploy via Git (Recomendado)
+### **2. Configurações Obrigatórias:**
 
-### 1️⃣ Prepare o Repositório
+| Campo | Valor |
+|-------|-------|
+| **Application Name** | `portaln4m` |
+| **Application Root** | `/` (raiz do projeto) |
+| **Node.js Version** | `20.x` ou superior |
+| **Application Mode** | `Production` |
+| **Build Command** | `npm install && npm run build` |
+| **Start Command** | `npm run preview -- --host 0.0.0.0 --port 3000` |
+| **Port** | `3000` (ou a porta atribuída) |
 
-```bash
-# Inicialize o Git (se ainda não fez)
-git init
+### **3. Variáveis de Ambiente (se necessário):**
 
-# Adicione todos os arquivos
-git add .
-
-# Faça o commit
-git commit -m "Preparado para deploy na Hostinger"
-
-# Conecte ao seu repositório remoto
-git remote add origin https://github.com/seu-usuario/portaln4m.git
-
-# Envie para o repositório
-git push -u origin master
-```
-
-### 2️⃣ Configure no hPanel da Hostinger
-
-1. Acesse **hPanel** → **Websites**
-2. Selecione seu domínio
-3. Vá em **Node.js App**
-4. Clique em **Create Application**
-5. Preencha:
-   - **Application mode**: Production
-   - **Application root**: `/` (raiz do projeto)
-   - **Application URL**: seu-dominio.com
-   - **Application startup file**: `dist/index.html` (após build)
-   - **Node.js version**: 20.x ou superior
-
-### 3️⃣ Conecte o Repositório
-
-1. Em **Source Control**, clique em **Connect Repository**
-2. Escolha **GitHub/GitLab/Bitbucket**
-3. Autorize o acesso
-4. Selecione o repositório `portaln4m`
-5. Branch: `master` ou `main`
-
-### 4️⃣ Configure Build Commands
-
-No painel Node.js App, adicione:
-
-**Build Command:**
-```bash
-npm install && npm run build
-```
-
-**Start Command:**
-```bash
-npm run preview
-```
-
-### 5️⃣ Variáveis de Ambiente (se necessário)
-
-Se usar banco de dados ou APIs, adicione em **Environment Variables**:
-```
+```env
 NODE_ENV=production
+PORT=3000
 BASE_PATH=/
 ```
 
-### 6️⃣ Deploy
-
-1. Clique em **Deploy**
-2. Aguarde o build (2-5 minutos)
-3. Acesse seu domínio!
-
 ---
 
-## 📦 Método 2: Deploy via ZIP
+## 📦 Métodos de Deploy
 
-### 1️⃣ Prepare o Arquivo ZIP
-
-**IMPORTANTE:** Não inclua `node_modules` e `dist` no ZIP!
+### **Opção 1: Via GitHub (Recomendado) 🌟**
 
 ```bash
-# No terminal, na raiz do projeto:
-zip -r portaln4m.zip . -x "node_modules/*" "dist/*" ".git/*" "*.log"
+# 1. Inicialize o repositório
+git init
+git add .
+git commit -m "Deploy para Hostinger"
+
+# 2. Crie repositório no GitHub e conecte
+git remote add origin https://github.com/seu-usuario/portaln4m.git
+git branch -M main
+git push -u origin main
+
+# 3. No hPanel:
+# - Node.js App → Create Application
+# - Clique em "Connect to Git"
+# - Autorize o GitHub
+# - Selecione o repositório
+# - Branch: main
+# - Configure os campos acima
+# - Clique em "Create"
 ```
 
-Ou manualmente:
-- Selecione TODOS os arquivos da raiz (package.json, vite.config.ts, index.html, src/, etc.)
-- Comprima em ZIP
-- **NÃO inclua** as pastas `node_modules` e `dist`
+### **Opção 2: Via Upload ZIP**
 
-### 2️⃣ Upload no hPanel
-
-1. Acesse **hPanel** → **File Manager**
-2. Navegue até a pasta do seu domínio (ex: `public_html`)
-3. Faça upload do `portaln4m.zip`
-4. Extraia o arquivo
-
-### 3️⃣ Configure Node.js App
-
-1. Vá em **Node.js App** → **Create Application**
-2. Preencha:
-   - **Application root**: `/public_html` (ou onde extraiu)
-   - **Application URL**: seu-dominio.com
-   - **Node.js version**: 20.x
-
-3. Em **Build Commands**:
 ```bash
-npm install && npm run build
-```
+# 1. Crie o ZIP (SEM node_modules e dist)
+# Windows (PowerShell):
+Compress-Archive -Path * -DestinationPath portaln4m.zip -Force -Exclude node_modules,dist,.git
 
-4. Em **Start Command**:
-```bash
-npm run preview
-```
+# Linux/Mac:
+zip -r portaln4m.zip . -x "node_modules/*" "dist/*" ".git/*"
 
-5. Clique em **Create**
-
----
-
-## 🔍 Verificação Pós-Deploy
-
-### ✅ Checklist
-
-- [ ] Site carrega em `seu-dominio.com`
-- [ ] Navegação entre páginas funciona
-- [ ] Painel admin acessível em `/admin/login`
-- [ ] Imagens e estilos carregam corretamente
-- [ ] Console do navegador sem erros
-
-### 🐛 Solução de Problemas
-
-#### Erro: "Application failed to start"
-```bash
-# No terminal SSH da Hostinger:
-cd /home/seu-usuario/public_html
-npm install
-npm run build
-```
-
-#### Erro 404 nas rotas
-Adicione arquivo `.htaccess` na raiz:
-```apache
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
-```
-
-#### Build muito lento
-Aumente a memória Node.js no hPanel:
-```bash
-NODE_OPTIONS=--max-old-space-size=4096
+# 2. No hPanel:
+# - File Manager → Upload para pasta do domínio
+# - Extraia o arquivo
+# - Node.js App → Create Application
+# - Configure os campos
+# - Clique em "Create"
 ```
 
 ---
 
-## 🎯 Configurações Recomendadas
+## 🔍 Solução de Problemas
 
-### Performance
+### **❌ Erro: "Rotas /admin/* não funcionam"**
 
-No `vite.config.ts` (já configurado):
+**Causa:** Falta configuração de SPA fallback
+
+**Solução:**
+1. Verifique se o `.htaccess` está na pasta `dist/` após o build
+2. Copie manualmente se necessário:
+```bash
+cp .htaccess dist/.htaccess
+cp public/_redirects dist/_redirects
+```
+
+3. Ou adicione ao `vite.config.ts`:
 ```typescript
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-    minify: 'terser',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom']
-        }
+build: {
+  rollupOptions: {
+    output: {
+      assetFileNames: (assetInfo) => {
+        if (assetInfo.name === '.htaccess') return '[name][extname]';
+        return 'assets/[name]-[hash][extname]';
       }
     }
   }
-})
+}
 ```
 
-### Cache
+### **❌ Erro: "Cannot find vite.config"**
 
-Adicione no `.htaccess`:
-```apache
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType image/jpg "access plus 1 year"
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType text/css "access plus 1 month"
-  ExpiresByType application/javascript "access plus 1 month"
-</IfModule>
+**Causa:** Application Root incorreto
+
+**Solução:**
+- Certifique-se que **Application Root** está como `/`
+- Verifique se `vite.config.ts` está na raiz do projeto
+
+### **❌ Erro: "Port already in use"**
+
+**Causa:** Porta 3000 ocupada
+
+**Solução:**
+Ajuste o comando de start:
+```bash
+npm run preview -- --host 0.0.0.0 --port $PORT
+```
+
+### **❌ Erro: "Build failed"**
+
+**Causa:** Dependências faltando ou erro de compilação
+
+**Solução:**
+1. Verifique os logs no hPanel
+2. Teste localmente:
+```bash
+npm install
+npm run build
+npm run preview
+```
+
+### **❌ Erro: "404 ao acessar /admin/login diretamente"**
+
+**Causa:** Servidor não está redirecionando para index.html
+
+**Solução:**
+1. Verifique se `.htaccess` está em `dist/`
+2. Se usar Nginx, adicione ao config:
+```nginx
+location / {
+  try_files $uri $uri/ /index.html;
+}
+```
+
+3. Teste o fallback:
+```bash
+# Acesse direto pela URL
+https://seudominio.com/admin/login
 ```
 
 ---
 
-## 📊 Monitoramento
+## ✅ Checklist de Deploy
 
-### Logs de Erro
+Antes de fazer o deploy, confirme:
 
-No hPanel → **Node.js App** → **Logs**
+- [ ] `package.json` na raiz com scripts `build` e `preview`
+- [ ] `vite.config.ts` na raiz com configuração de preview
+- [ ] `index.html` na raiz
+- [ ] `.htaccess` configurado com SPA fallback
+- [ ] `public/_redirects` criado
+- [ ] Pasta `src/` com `main.tsx` e `App.tsx`
+- [ ] Rotas configuradas em `src/router/config.tsx`
+- [ ] **Application Root** definido como `/`
+- [ ] Build Command: `npm install && npm run build`
+- [ ] Start Command: `npm run preview -- --host 0.0.0.0 --port 3000`
+- [ ] Não fazer upload de `node_modules/` ou `dist/`
 
-### Reiniciar Aplicação
+---
+
+## 🧪 Testar Localmente Antes do Deploy
 
 ```bash
-# Via SSH:
-pm2 restart all
-```
+# 1. Instale as dependências
+npm install
 
-Ou no hPanel: **Node.js App** → **Restart**
+# 2. Faça o build de produção
+npm run build
+
+# 3. Teste o preview (simula produção)
+npm run preview
+
+# 4. Acesse e teste todas as rotas:
+# - http://localhost:3000/
+# - http://localhost:3000/admin/login
+# - http://localhost:3000/admin/dashboard
+
+# 5. Teste navegação direta (F5 nas páginas)
+```
 
 ---
 
-## 🔐 Segurança
+## 📊 Após o Deploy
 
-### Variáveis Sensíveis
+### **1. Verifique o Status:**
+```bash
+# No hPanel, vá em Node.js App
+# Status deve estar: "Running" ✅
+```
 
-**NUNCA** commite no Git:
-- Senhas de banco de dados
-- API keys
-- Tokens de autenticação
+### **2. Teste as Rotas:**
+- ✅ `https://seudominio.com/` (Home)
+- ✅ `https://seudominio.com/admin/login` (Login Admin)
+- ✅ `https://seudominio.com/admin/dashboard` (Dashboard)
 
-Use **Environment Variables** no hPanel!
+### **3. Teste Navegação Direta:**
+- Acesse `https://seudominio.com/admin/login` diretamente
+- Pressione F5 na página
+- Deve carregar normalmente (não dar 404)
 
-### HTTPS
+### **4. Verifique os Logs:**
+```bash
+# No hPanel → Node.js App → Logs
+# Procure por erros ou avisos
+```
 
-A Hostinger fornece SSL gratuito:
-1. **hPanel** → **SSL**
-2. Ative **Let's Encrypt**
-3. Force HTTPS no `.htaccess`
+---
+
+## 🔐 Credenciais de Admin
+
+**Usuário:** `maurilio.alves`  
+**Senha:** `2331`
+
+---
+
+## 🎯 Estrutura de Rotas
+
+| Rota | Componente | Descrição |
+|------|-----------|-----------|
+| `/` | `Home` | Página inicial |
+| `/admin/login` | `AdminLogin` | Login administrativo |
+| `/admin/dashboard` | `AdminDashboard` | Painel admin |
+| `*` | `NotFound` | Página 404 |
 
 ---
 
 ## 📞 Suporte
 
-- **Documentação Hostinger**: https://support.hostinger.com
-- **Chat ao vivo**: Disponível 24/7 no hPanel
-- **Comunidade**: https://community.hostinger.com
+Se encontrar problemas:
+
+1. **Verifique os logs** no hPanel
+2. **Teste localmente** com `npm run preview`
+3. **Confirme o .htaccess** está em `dist/`
+4. **Valide as rotas** em `src/router/config.tsx`
 
 ---
 
-## ✨ Pronto!
+## 🚀 Performance
 
-Seu projeto está 100% preparado para deploy na Hostinger! 🎉
+O projeto está otimizado com:
 
-Qualquer dúvida, consulte este guia ou entre em contato com o suporte da Hostinger.
+- ✅ **Code Splitting** (vendor chunks separados)
+- ✅ **Cache Headers** (1 ano para assets)
+- ✅ **Compressão Gzip** (texto e JS)
+- ✅ **Lazy Loading** (rotas carregadas sob demanda)
+- ✅ **Security Headers** (XSS, CSRF, Clickjacking)
+
+---
+
+**Projeto pronto para produção! 🎉**
