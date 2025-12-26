@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react-swc'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/', // Garante que o base path seja sempre /
   server: {
     host: '0.0.0.0',
     port: 5173,
@@ -30,6 +31,10 @@ export default defineConfig({
     }
   },
   define: {
-    __BASE_PATH__: JSON.stringify(process.env.BASE_PATH || '/')
+    __BASE_PATH__: JSON.stringify('/'), // Força base path como /
+    __IS_PREVIEW__: JSON.stringify(false),
+    __READDY_PROJECT_ID__: JSON.stringify(''),
+    __READDY_VERSION_ID__: JSON.stringify(''),
+    __READDY_AI_DOMAIN__: JSON.stringify('')
   }
 })
